@@ -1,11 +1,25 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { GlobalStyle } from "./GlobalStyle";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 function Root() {
   return (
     <>
-      <h1>Root</h1>
-      <Outlet />
+      <HelmetProvider>
+        <Helmet>
+          <title>title</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap"
+            rel="stylesheet"
+          ></link>
+        </Helmet>
+        <GlobalStyle />
+        <h1>Root</h1>
+        <Outlet />
+      </HelmetProvider>
     </>
   );
 }
