@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Link, useMatch } from "react-router-dom";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchPriceData } from "../api";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -151,43 +152,58 @@ interface IPrice {
 }
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
   const { coinId } = useParams();
   // 전달 받은 state
   const { state } = useLocation() as IRouteState;
   // console.log(state?.name);
-  const [info, setInfo] = useState<IInfo>();
-  const [price, setPrice] = useState<IPrice>();
   const chartMatch = useMatch("/:coinId/chart");
   // console.log(chartMatch);
   const priceMatch = useMatch("/:coinId/price");
   // console.log(priceMatch);
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      // console.log(infoData);
-      setInfo(infoData);
+  // // react query 적용으로 인한 주석
+  // const [loading, setLoading] = useState(true);
+  // const [info, setInfo] = useState<IInfo>();
+  // const [price, setPrice] = useState<IPrice>();
 
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      // console.log(priceData);
-      setPrice(priceData);
-    })();
-    setLoading(false);
-  }, [coinId]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const infoData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+  //     ).json();
+  //     // console.log(infoData);
+  //     setInfo(infoData);
 
+  //     const priceData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+  //     ).json();
+  //     // console.log(priceData);
+  //     setPrice(priceData);
+  //   })();
+  //   setLoading(false);
+  // }, [coinId]);
+
+  const { isLoading: infoLoading, data: infoData } = useQuery<IInfo>(
+    ["coinInfo", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: priceLoading, data: priceData } = useQuery<IPrice>(
+    ["coinPrice", coinId],
+    () => fetchPriceData(coinId),
+    {
+      refetchInterval: 5000,
+    }
+  );
+
+  const loading = infoLoading && priceLoading;
   return (
     <>
       <h1>Coin ID : {coinId}</h1>
       <Container>
         <Header>
-          <Title>Coin - {state?.name || "Loading.."}</Title>
           <Title>
-            Coin - {state?.name ? state.name : loading ? "Loading" : info?.name}
+            Coin -{" "}
+            {state?.name ? state.name : loading ? "Loading" : infoData?.name}
           </Title>
         </Header>
         {loading ? (
@@ -195,11 +211,11 @@ function Coin() {
         ) : (
           <>
             <h1>babo coin</h1>
-            <Img src={info?.logo} alt={info?.name} />
+            <Img src={infoData?.logo} alt={infoData?.name} />
             <Overview>
               <OverviewItem>
                 <span>rank 1</span>
-                <span>{info?.rank}</span>
+                <span>{infoData?.rank}</span>
               </OverviewItem>
               <OverviewItem>
                 <span>span 2</span>
@@ -210,11 +226,11 @@ function Coin() {
                 <span>span 3</span>
               </OverviewItem>
             </Overview>
-            <Description>{info?.description}</Description>
+            <Description>{infoData?.description}</Description>
             <Overview>
               <OverviewItem>
                 <span>Price</span>
-                <span>$ {price?.quotes?.USD?.price.toFixed(2)} USD</span>
+                <span>$ {priceData?.quotes?.USD?.price.toFixed(2)} USD</span>
               </OverviewItem>
               <OverviewItem>
                 <span>span 2</span>
@@ -223,10 +239,14 @@ function Coin() {
             </Overview>
             <LinkTabs>
               <LinkTab isActive={chartMatch !== null}>
-                <Link to="chart">Chart</Link>
+                <Link to="chart" state={coinId}>
+                  Chart
+                </Link>
               </LinkTab>
               <LinkTab isActive={priceMatch !== null}>
-                <Link to="price">Price</Link>
+                <Link to="price" state={coinId}>
+                  Price
+                </Link>
               </LinkTab>
             </LinkTabs>
             <Outlet />

@@ -8,7 +8,7 @@ function Root() {
     <>
       <HelmetProvider>
         <Helmet>
-          <title>title</title>
+          <title>title helmet</title>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
