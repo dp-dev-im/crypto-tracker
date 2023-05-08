@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
-import { Helmet } from "react-helmet-async";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -23,8 +21,8 @@ const Header = styled.header`
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: white;
-  color: ${(props) => props.theme.bgColor};
+  background-color: pink;
+  color: ${(props) => props.theme.textColor};
   border-radius: 15px;
   margin-bottom: 10px;
   font-size: 20px;
@@ -69,6 +67,10 @@ interface ICoin {
   type: string;
 }
 
+interface IToggleDark {
+  toggleDark: () => void;
+}
+
 function Coins() {
   const { isLoading, data } = useQuery<ICoin[]>("getCoins", fetchCoins);
   // console.log(isLoading, data)
@@ -84,6 +86,8 @@ function Coins() {
   //     setLoading(false);
   //   })();
   // }, []);
+
+  const { toggleDark } = useOutletContext<IToggleDark>();
 
   return (
     <>

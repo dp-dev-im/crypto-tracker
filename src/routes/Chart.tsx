@@ -40,7 +40,8 @@ function Chart() {
             series={[
               {
                 name: "종가",
-                data: data?.map((price) => Number(price.close)) as number[],
+                // data: data?.map((price) => Number(price.close)) as number[],
+                data: [1, 2, 3, 4],
               },
             ]}
             options={{

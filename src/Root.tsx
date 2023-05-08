@@ -1,7 +1,8 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { GlobalStyle } from "./GlobalStyle";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { darkTheme, lightTheme } from "./theme";
+import { ThemeProvider } from "styled-components";
 
 function Root() {
   return (
@@ -16,7 +17,7 @@ function Root() {
             rel="stylesheet"
           ></link>
         </Helmet>
-        <GlobalStyle />
+        
         <h1>Root</h1>
         <Outlet />
       </HelmetProvider>

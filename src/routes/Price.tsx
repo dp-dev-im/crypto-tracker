@@ -1,6 +1,6 @@
 import ApexChart from "react-apexcharts";
 import { useQuery } from "react-query";
-import { useLocation } from "react-router-dom";
+import { useLocation, useOutlet, useOutletContext } from "react-router-dom";
 import { fetchCoinHistory } from "../api";
 
 interface ICoinId {
@@ -18,6 +18,10 @@ interface IOhlcv {
   market_cap: number;
 }
 
+interface IIsdark {
+  isDark: boolean;
+}
+
 function Price() {
   const { state } = useLocation();
   const coinId = state as ICoinId;
@@ -28,6 +32,9 @@ function Price() {
   // console.log(isLoading, data);
 
   // console.log(data?.map((data) => data.close));
+
+  const { isDark } = useOutletContext<IIsdark>();
+  console.log(isDark);
   return (
     <>
       <h1>Price</h1>
@@ -50,12 +57,14 @@ function Price() {
               {
                 name: "price",
                 data: data?.map((price) => Number(price.close)) as number[],
+                // data: [11, 12, 23, 14, 15, 16],
               },
             ]}
             options={{
               theme: {
-                mode: "dark",
+                // mode: "dark",
                 // mode: "light"
+                mode: isDark ? "dark" : "light",
               },
               chart: {
                 width: 300,
@@ -82,7 +91,7 @@ function Price() {
                 },
                 type: "datetime",
                 categories: data?.map((price) =>
-                  new Date(price.time_close * 1000).toISOString()
+                  new Date(price?.time_close * 1000).toISOString()
                 ),
               },
               yaxis: {
@@ -103,7 +112,7 @@ function Price() {
               // 소수점
               tooltip: {
                 y: {
-                  formatter: (value) => `${value.toFixed(2)}`,
+                  formatter: (value) => `${value?.toFixed(2)}`,
                 },
               },
               colors: ["pink"],

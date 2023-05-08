@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Link, useMatch } from "react-router-dom";
+import { Link, useMatch, useOutletContext } from "react-router-dom";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchPriceData } from "../api";
@@ -151,6 +151,10 @@ interface IPrice {
   };
 }
 
+interface IIsDark {
+  isDark: boolean;
+}
+
 function Coin() {
   const { coinId } = useParams();
   // 전달 받은 state
@@ -196,6 +200,7 @@ function Coin() {
   );
 
   const loading = infoLoading && priceLoading;
+  const { isDark } = useOutletContext<IIsDark>();
   return (
     <>
       <h1>Coin ID : {coinId}</h1>
@@ -249,7 +254,7 @@ function Coin() {
                 </Link>
               </LinkTab>
             </LinkTabs>
-            <Outlet />
+            <Outlet context={{isDark}} />
           </>
         )}
       </Container>
