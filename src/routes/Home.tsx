@@ -3,6 +3,8 @@ import { Link, Outlet } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { darkTheme, lightTheme } from "../theme";
 import { GlobalStyle } from "../GlobalStyle";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atom";
 
 const Container = styled.div`
   display: flex;
@@ -22,8 +24,9 @@ const Container = styled.div`
 `;
 
 function Home() {
-  const [isDark, setIsDark] = useState(false);
-  const toggleDark = () => setIsDark((current) => !current);
+  const isDark = useRecoilValue(isDarkAtom);
+  const setIsDark = useSetRecoilState(isDarkAtom);
+  const toggleMode = () => setIsDark((current) => !current);
   return (
     <>
       <h1>Home</h1>
@@ -36,12 +39,12 @@ function Home() {
           <Link to={"/coins"}>
             <button>Coins</button>
           </Link>
-          <button onClick={toggleDark}>
+          <button onClick={toggleMode}>
             {isDark ? "Dark Mode" : "Light Mode"}
           </button>
         </Container>
       </ThemeProvider>
-      <Outlet context={{ toggleDark, isDark }} />
+      <Outlet />
     </>
   );
 }

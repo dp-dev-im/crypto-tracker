@@ -2,6 +2,8 @@ import ApexChart from "react-apexcharts";
 import { useQuery } from "react-query";
 import { useLocation, useOutlet, useOutletContext } from "react-router-dom";
 import { fetchCoinHistory } from "../api";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atom";
 
 interface ICoinId {
   coinId?: string;
@@ -33,8 +35,8 @@ function Price() {
 
   // console.log(data?.map((data) => data.close));
 
-  const { isDark } = useOutletContext<IIsdark>();
-  console.log(isDark);
+  const isDark = useRecoilValue(isDarkAtom);
+
   return (
     <>
       <h1>Price</h1>

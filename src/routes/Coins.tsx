@@ -1,7 +1,9 @@
 import { useQuery } from "react-query";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atom";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -86,8 +88,6 @@ function Coins() {
   //     setLoading(false);
   //   })();
   // }, []);
-
-  const { toggleDark } = useOutletContext<IToggleDark>();
 
   return (
     <>

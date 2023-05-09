@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Link, useMatch, useOutletContext } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchPriceData } from "../api";
@@ -200,7 +200,6 @@ function Coin() {
   );
 
   const loading = infoLoading && priceLoading;
-  const { isDark } = useOutletContext<IIsDark>();
   return (
     <>
       <h1>Coin ID : {coinId}</h1>
@@ -238,8 +237,10 @@ function Coin() {
                 <span>$ {priceData?.quotes?.USD?.price.toFixed(2)} USD</span>
               </OverviewItem>
               <OverviewItem>
-                <span>span 2</span>
-                <span>span 2</span>
+                <span>1 days</span>
+                <span style={{ color: "red" }}>
+                  {priceData?.quotes.USD.percent_change_1h}
+                </span>
               </OverviewItem>
             </Overview>
             <LinkTabs>
@@ -254,7 +255,7 @@ function Coin() {
                 </Link>
               </LinkTab>
             </LinkTabs>
-            <Outlet context={{isDark}} />
+            <Outlet />
           </>
         )}
       </Container>
