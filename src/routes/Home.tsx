@@ -23,6 +23,14 @@ const Container = styled.div`
   }
 `;
 
+const H1 = styled.h1`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  margin: 60px;
+`;
+
 function Home() {
   const isDark = useRecoilValue(isDarkAtom);
   const setIsDark = useSetRecoilState(isDarkAtom);
@@ -37,13 +45,14 @@ function Home() {
             <button>Home</button>
           </Link>
           <Link to={"/coins"}>
-            <button>Coins</button>
+            <button>Coin List</button>
           </Link>
           <button onClick={toggleMode}>
             {isDark ? "Dark Mode" : "Light Mode"}
           </button>
         </Container>
       </ThemeProvider>
+      <H1>Click Coin List</H1>
       <Outlet />
     </>
   );

@@ -1,127 +1,136 @@
-import ApexChart from "react-apexcharts";
 import { useQuery } from "react-query";
-import { useLocation, useOutlet, useOutletContext } from "react-router-dom";
-import { fetchCoinHistory } from "../api";
-import { useRecoilValue } from "recoil";
-import { isDarkAtom } from "../atom";
+import { useLocation } from "react-router-dom";
+import styled from "styled-components";
+import { fetchPriceData } from "../api";
 
-interface ICoinId {
-  coinId?: string;
+interface IPriceLocation {
+  state: string;
+}
+interface IPriceInfo {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  circulating_supply: number;
+  total_supply: number;
+  max_supply: number;
+  beta_value: number;
+  first_data_at: string;
+  last_updated: string;
+  quotes: {
+    USD: {
+      ath_date: string;
+      ath_price: number;
+      market_cap: number;
+      market_cap_change_24h: number;
+      percent_change_12h: number;
+      percent_change_15m: number;
+      percent_change_1h: number;
+      percent_change_1y: number;
+      percent_change_24h: number;
+      percent_change_30d: number;
+      percent_change_30m: number;
+      percent_change_6h: number;
+      percent_change_7d: number;
+      percent_from_price_ath: number;
+      price: number;
+      volume_24h: number;
+      volume_24h_change_24h: number;
+    };
+  };
 }
 
-interface IOhlcv {
-  time_open: number;
-  time_close: number;
-  open: string;
-  high: string;
-  low: string;
-  close: string;
-  volume: string;
-  market_cap: number;
-}
+const Container = styled.div`
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 5px 20px;
+`;
+const Title = styled.h1`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: ${(props) => props.theme.accentColor};
+  margin-bottom: 5px;
+`;
 
-interface IIsdark {
-  isDark: boolean;
-}
+const BoxDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  background-color: ${(props) => props.theme.bgColor};
+  margin-bottom: 7px;
+`;
+
+const Box = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  /* justify-items: center; */
+  background-color: rgba(0, 0, 0, 25);
+  color: ${(props) => props.theme.textColor};
+  padding: 30px 55px;
+  margin-right: 1px;
+  border-radius: 15px;
+  span:first-child {
+    font-size: 12px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    width: 60px;
+  }
+`;
 
 function Price() {
-  const { state } = useLocation();
-  const coinId = state as ICoinId;
+  const { state } = useLocation() as IPriceLocation;
+  console.log(state);
+  const coinId = state;
 
-  const { isLoading, data } = useQuery<IOhlcv[]>(["ohlcv", coinId], () =>
-    fetchCoinHistory(coinId)
+  const { isLoading, data } = useQuery<IPriceInfo>(["price", coinId], () =>
+    fetchPriceData(coinId)
   );
-  // console.log(isLoading, data);
-
-  // console.log(data?.map((data) => data.close));
-
-  const isDark = useRecoilValue(isDarkAtom);
 
   return (
     <>
-      <h1>Price</h1>
-      <div>
-        {isLoading ? (
-          "Loading.. Charts.."
-        ) : (
-          <ApexChart
-            type="line"
-            // type="line"
-            series={[
-              // {
-              //   name: "test",
-              //   data: [1, 2, 3, 4, 5, 6],
-              // },
-              // {
-              //   name: "test2",
-              //   data: [11, 12, 23, 14, 15, 16],
-              // },
-              {
-                name: "price",
-                data: data?.map((price) => Number(price.close)) as number[],
-                // data: [11, 12, 23, 14, 15, 16],
-              },
-            ]}
-            options={{
-              theme: {
-                // mode: "dark",
-                // mode: "light"
-                mode: isDark ? "dark" : "light",
-              },
-              chart: {
-                width: 300,
-                height: 500,
-                toolbar: {
-                  show: false,
-                },
-                background: "trasparent",
-              },
-              grid: { show: false },
-              stroke: {
-                curve: "smooth",
-                width: 3,
-              },
-              xaxis: {
-                labels: {
-                  show: false,
-                },
-                axisBorder: {
-                  show: false,
-                },
-                axisTicks: {
-                  show: false,
-                },
-                type: "datetime",
-                categories: data?.map((price) =>
-                  new Date(price?.time_close * 1000).toISOString()
-                ),
-              },
-              yaxis: {
-                labels: {
-                  show: false,
-                },
-              },
-              fill: {
-                // colors: ["red" ],
-                // colors: ["#000408", "#B32824"],
-                type: "gradient",
-                gradient: {
-                  shade: "dark",
-                  gradientToColors: ["white"],
-                  stops: [0, 100],
-                },
-              },
-              // 소수점
-              tooltip: {
-                y: {
-                  formatter: (value) => `${value?.toFixed(2)}`,
-                },
-              },
-              colors: ["pink"],
-            }}
-          />
-        )}
-      </div>
+      {isLoading ? (
+        <Title>Loading Pirce</Title>
+      ) : (
+        <>
+          <Container>
+            <Title>Price</Title>
+            <>
+              <BoxDiv>
+                <Box>
+                  <span>1 year</span>
+                  <span>{data?.quotes.USD.percent_change_1y}</span>
+                </Box>
+                <Box>
+                  <span>30 Days</span>
+                  <span>{data?.quotes.USD.percent_change_30d}</span>
+                </Box>
+                <Box>
+                  <span>7 Days</span>
+                  <span>{data?.quotes.USD.percent_change_7d}</span>
+                </Box>
+              </BoxDiv>
+
+              <BoxDiv>
+                <Box>
+                  <span>12 hours</span>
+                  <span>{data?.quotes.USD.percent_change_12h}</span>
+                </Box>
+                <Box>
+                  <span>6 hours</span>
+                  <span>{data?.quotes.USD.percent_change_6h}</span>
+                </Box>
+                <Box>
+                  <span>1 horus</span>
+                  <span>{data?.quotes.USD.percent_change_1h}</span>
+                </Box>
+              </BoxDiv>
+            </>
+          </Container>
+        </>
+      )}
     </>
   );
 }
